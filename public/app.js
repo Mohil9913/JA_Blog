@@ -167,13 +167,26 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   
   async function fetchDownloadLinks(program, specialization) {
-    // Replace with your API endpoint for fetching download links based on program and specialization
-    const response = await fetch(`/api/download-links?program=${program}&specialization=${specialization}`);
-    const data = await response.json();
-    return data;
-  }
-  
-  function displayDownloadLinks(links) {
+    try {
+        const response = await fetch(`/api/download-links?program=${program}&specialization=${specialization}`);
+        const data = await response.json();
+
+        // Check if the expected properties are available in the received data
+        if (data && Array.isArray(data.specializations) && data.specializations.length > 0) {
+            // Extract the items directly from the first specialization
+            return data.specializations[0].items;
+        } else {
+            console.error('Invalid or empty download links:', data);
+            return [];
+        }
+    } catch (error) {
+        console.error('Error fetching download links:', error);
+        return [];
+    }
+}
+
+
+function displayDownloadLinks(links) {
     console.log('Received download links:', links);
 
     const linksContainer = document.getElementById('downloadLinks');
@@ -212,4 +225,3 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
   }  
-  
